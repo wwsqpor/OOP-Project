@@ -1,5 +1,8 @@
 package university.demo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import university.enums.RequestStatus;
 import university.exceptions.CreditLimitExceededException;
 import university.exceptions.FailLimitExceededException;
@@ -8,6 +11,8 @@ import university.models.Course;
 import university.models.RegistrationRequest;
 import university.models.ResearchProject;
 import university.models.Student;
+import university.models.Teacher;
+import university.models.User;
 import university.patterns.UniversityDatabase;
 import university.utils.ResearchService;
 
@@ -23,6 +28,7 @@ public final class StudentMenu {
             System.out.println("3. Create registration request");
             System.out.println("4. View marks");
             System.out.println("5. Join research project");
+            System.out.println("6. Rate teacher");
             System.out.println("0. Back");
             int choice = ConsoleUtils.askInt("Choose: ");
             if (choice == 0) {
@@ -38,6 +44,8 @@ public final class StudentMenu {
                 student.getMarks().forEach((k, v) -> System.out.println(k + " -> " + v));
             } else if (choice == 5) {
                 joinProject(db, student);
+            } else if (choice == 6) {
+                rateTeacher(db);
             }
         }
     }
@@ -90,5 +98,43 @@ public final class StudentMenu {
         } catch (NotResearcherException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private static void rateTeacher(UniversityDatabase db) {
+        List<Teacher> teachers = new ArrayList<>();
+        for (User user : db.getUsers()) {
+            if (user instanceof Teacher) {
+                teachers.add((Teacher) user);
+            }
+        }
+        if (teachers.isEmpty()) {
+            System.out.println("No teachers available.");
+            return;
+        }
+
+        for (int i = 0; i < teachers.size(); i++) {
+            Teacher teacher = teachers.get(i);
+            String averageText = teacher.getRatingsCount() == 0
+                    ? "N/A"
+                    : String.format("%.2f", teacher.getAverageRating());
+            System.out.println((i + 1) + ". " + teacher.getName() + " (avg: " + averageText + ", ratings: "
+                    + teacher.getRatingsCount() + ")");
+        }
+
+        int idx = ConsoleUtils.askInt("Teacher number: ") - 1;
+        if (idx < 0 || idx >= teachers.size()) {
+            System.out.println("Invalid teacher.");
+            return;
+        }
+
+        int rating = ConsoleUtils.askInt("Your rating (1..5): ");
+        if (rating < 1 || rating > 5) {
+            System.out.println("Rating must be between 1 and 5.");
+            return;
+        }
+
+        Teacher teacher = teachers.get(idx);
+        teacher.addRating(rating);
+        System.out.println("Rating submitted. New average: " + String.format("%.2f", teacher.getAverageRating()));
     }
 }
