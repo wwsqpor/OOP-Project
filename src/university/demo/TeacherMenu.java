@@ -2,7 +2,9 @@ package university.demo;
 
 import java.time.LocalDate;
 import java.util.List;
+import university.exceptions.CourseNotTaughtException;
 import university.models.Mark;
+import university.models.Course;
 import university.models.ResearchPaper;
 import university.models.Student;
 import university.models.Teacher;
@@ -25,7 +27,7 @@ public final class TeacherMenu {
                 return;
             }
             if (choice == 1) {
-                putMark(db);
+                putMark(db, teacher);
             } else if (choice == 2) {
                 addPaper(teacher);
             } else if (choice == 3) {
@@ -34,7 +36,7 @@ public final class TeacherMenu {
         }
     }
 
-    private static void putMark(UniversityDatabase db) {
+    private static void putMark(UniversityDatabase db, Teacher teacher) {
         String studentId = ConsoleUtils.ask("Student id: ");
         Student student = db.getUsers().stream()
                 .filter(u -> u instanceof Student && u.getId().equals(studentId))
@@ -46,11 +48,28 @@ public final class TeacherMenu {
             return;
         }
         String courseCode = ConsoleUtils.ask("Course code: ");
+        Course course = db.findCourseByCode(courseCode);
+        if (course == null) {
+            System.out.println("Course not found.");
+            return;
+        }
+        try {
+            ensureTeacherTeachesCourse(teacher, courseCode);
+        } catch (CourseNotTaughtException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
         double a1 = Double.parseDouble(ConsoleUtils.ask("Attestation 1 (0..30): "));
         double a2 = Double.parseDouble(ConsoleUtils.ask("Attestation 2 (0..30): "));
         double fin = Double.parseDouble(ConsoleUtils.ask("Final (0..40): "));
-        student.putMark(courseCode, new Mark(a1, a2, fin));
+        student.putMark(course.getCode(), new Mark(a1, a2, fin));
         System.out.println("Mark saved.");
+    }
+
+    private static void ensureTeacherTeachesCourse(Teacher teacher, String courseCode) throws CourseNotTaughtException {
+        if (!teacher.teachesCourse(courseCode)) {
+            throw new CourseNotTaughtException("Cannot put mark: you do not teach this course.");
+        }
     }
 
     private static void addPaper(Teacher teacher) {

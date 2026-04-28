@@ -33,6 +33,7 @@ public class Main {
             System.out.println("\n=== University System ===");
             System.out.println("1. Login");
             System.out.println("2. View news");
+            System.out.println("3. View research projects");
             System.out.println("0. Exit");
             int choice = ConsoleUtils.askInt("Choose: ");
 
@@ -43,6 +44,10 @@ public class Main {
             }
             if (choice == 2) {
                 db.getNews().forEach(System.out::println);
+                continue;
+            }
+            if (choice == 3) {
+                viewResearchProjects(db);
                 continue;
             }
             if (choice != 1) {
@@ -87,6 +92,8 @@ public class Main {
             ManagerMenu.open(db, manager);
         } else if (user instanceof Teacher teacher) {
             TeacherMenu.open(db, teacher);
+        } else if (user instanceof ResearcherEmployee researcherEmployee) {
+            ResearcherMenu.open(db, researcherEmployee);
         } else if (user instanceof Student student) {
             StudentMenu.open(db, student);
         } else {
@@ -101,11 +108,14 @@ public class Main {
 
         Admin admin = new Admin("U1", "AdminName", "admin@uni.kz", "admin123");
         Manager manager = new Manager("U2", "ManagerName", "manager@uni.kz", "manager123", ManagerType.OR);
+        Course cs101 = new Course("CS101", "Intro to Programming", 5, null);
+        Course cs201 = new Course("CS201", "Data Structures", 6, null);
+        Course cs301 = new Course("CS301", "Software Engineering", 6, null);
         Teacher prof = new Teacher("U3", "ProfName", "beken@uni.kz", "beken123", TeacherTitle.PROFESSOR, true,
-                7);
+                7, List.of(cs101, cs301));
         Teacher lecturer = new Teacher("U4", "LecturerName", "pakita@uni.kz", "pakita123",
                 TeacherTitle.SENIOR_LECTURER,
-                false, 0);
+                false, 0, List.of(cs201));
         Student s1 = new Student("U5", "Student1Name", "oleg@uni.kz", "oleg123", 1, DegreeType.BACHELOR);
         Student s2 = new Student("U6", "Student2Name", "dima@uni.kz", "dima123", 2, DegreeType.BACHELOR);
         Student s3 = new Student("U7", "Student3Name", "karim@uni.kz", "karim123", 3, DegreeType.BACHELOR);
@@ -119,10 +129,35 @@ public class Main {
         }
 
         db.getUsers().addAll(List.of(admin, manager, prof, lecturer, s1, s2, s3, s4, re));
-        db.getCourses().add(new Course("CS101", "Intro to Programming", 5, prof));
-        db.getCourses().add(new Course("CS201", "Data Structures", 6, lecturer));
-        db.getCourses().add(new Course("CS301", "Software Engineering", 6, prof));
+        db.getCourses().add(cs101);
+        db.getCourses().add(cs201);
+        db.getCourses().add(cs301);
 
         db.getResearchProjects().add(new ResearchProject("Why this semester sucks"));
+    }
+
+    private static void viewResearchProjects(UniversityDatabase db) {
+        List<ResearchProject> projects = db.getResearchProjects();
+        if (projects.isEmpty()) {
+            System.out.println("No research projects available.");
+            return;
+        }
+
+        System.out.println("\n--- Research Projects ---");
+        for (ResearchProject project : projects) {
+            System.out.println("\nProject: " + project.getName());
+            List<String> memberIds = project.getMemberIds();
+            if (memberIds.isEmpty()) {
+                System.out.println("  Members: None");
+            } else {
+                System.out.println("  Members:");
+                for (String memberId : memberIds) {
+                    User member = db.findUserById(memberId);
+                    if (member != null) {
+                        System.out.println("    - " + member.getName() + " (" + member.getRole() + ")");
+                    }
+                }
+            }
+        }
     }
 }

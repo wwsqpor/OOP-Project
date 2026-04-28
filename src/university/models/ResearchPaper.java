@@ -2,8 +2,14 @@ package university.models;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Comparator;
 
 public class ResearchPaper implements Serializable {
+    public static final Comparator<ResearchPaper> BY_DATE_PUBLISHED = Comparator
+            .comparing(ResearchPaper::getPublishedAt);
+    public static final Comparator<ResearchPaper> BY_CITATIONS = Comparator.comparingInt(ResearchPaper::getCitations);
+    public static final Comparator<ResearchPaper> BY_PAGES = Comparator.comparingInt(ResearchPaper::getPages);
+
     private final String title;
     private final String author;
     private final LocalDate publishedAt;

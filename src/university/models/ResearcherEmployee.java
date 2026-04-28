@@ -1,6 +1,7 @@
 package university.models;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import university.interfaces.Researcher;
 
@@ -30,6 +31,15 @@ public class ResearcherEmployee extends Employee implements Researcher {
     @Override
     public void addResearchPaper(ResearchPaper paper) {
         papers.add(paper);
+    }
+
+    @Override
+    public void PrintPapers(Comparator<ResearchPaper> c) {
+        List<ResearchPaper> sortedPapers = new ArrayList<>(papers);
+        sortedPapers.sort(c);
+        for (ResearchPaper paper : sortedPapers) {
+            System.out.println(paper);
+        }
     }
 
     @Override

@@ -29,6 +29,7 @@ public final class StudentMenu {
             System.out.println("4. View marks");
             System.out.println("5. Join research project");
             System.out.println("6. Rate teacher");
+            System.out.println("7. Get teachers info");
             System.out.println("0. Back");
             int choice = ConsoleUtils.askInt("Choose: ");
             if (choice == 0) {
@@ -46,7 +47,10 @@ public final class StudentMenu {
                 joinProject(db, student);
             } else if (choice == 6) {
                 rateTeacher(db);
+            } else if (choice == 7) {
+                getTeachersInfo(db);
             }
+
         }
     }
 
@@ -136,5 +140,19 @@ public final class StudentMenu {
         Teacher teacher = teachers.get(idx);
         teacher.addRating(rating);
         System.out.println("Rating submitted. New average: " + String.format("%.2f", teacher.getAverageRating()));
+    }
+
+    private static void getTeachersInfo(UniversityDatabase db) {
+        for (User user : db.getUsers()) {
+            if (user instanceof Teacher) {
+                Teacher teacher = (Teacher) user;
+                String averageText = teacher.getRatingsCount() == 0
+                        ? "N/A"
+                        : String.format("%.2f", teacher.getAverageRating());
+                System.out.println(teacher.getName() + " | Title: " + teacher.getTitle() + " | Researcher: "
+                        + teacher.isResearcher() + " | H-index: " + teacher.getHIndex() + " | Avg rating: "
+                        + averageText + " | Ratings count: " + teacher.getRatingsCount());
+            }
+        }
     }
 }

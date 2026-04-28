@@ -4,6 +4,7 @@ src/university/demo/StudentMenu.java
 src/university/demo/AdminMenu.java
 src/university/demo/TeacherMenu.java
 src/university/demo/Main.java
+src/university/demo/ResearcherMenu.java
 src/university/patterns/SystemLogger.java
 src/university/patterns/UniversityDatabase.java
 src/university/enums/LessonType.java
@@ -34,6 +35,7 @@ src/university/exceptions/FailLimitExceededException.java
 src/university/exceptions/NotResearcherException.java
 src/university/exceptions/CreditLimitExceededException.java
 src/university/exceptions/AuthenticationException.java
+src/university/exceptions/CourseNotTaughtException.java
 src/university/exceptions/LowHIndexException.java
 src/university/data/DataStorage.java
 src/university/interfaces/Researcher.java

@@ -12,7 +12,7 @@ public class Course implements Serializable {
         this.code = code;
         this.name = name;
         this.credits = credits;
-        this.teacher = teacher;
+        setTeacher(teacher);
     }
 
     public String getCode() {
@@ -32,7 +32,16 @@ public class Course implements Serializable {
     }
 
     public void setTeacher(Teacher teacher) {
+        if (this.teacher == teacher) {
+            return;
+        }
+        if (this.teacher != null) {
+            this.teacher.removeTeachingCourse(this);
+        }
         this.teacher = teacher;
+        if (this.teacher != null) {
+            this.teacher.addTeachingCourse(this);
+        }
     }
 
     @Override
