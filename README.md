@@ -2,9 +2,11 @@
 # Research-Oriented University Information System (Simplified)
 
 > Run
+,,,
 find src -name "*.java" > sources.txt 
 javac -d out @sources.txt
 java -cp out university.demo.Main
+,,,
 
 
 ## Demo Accounts
