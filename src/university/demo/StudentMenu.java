@@ -1,0 +1,94 @@
+package university.demo;
+
+import university.enums.RequestStatus;
+import university.exceptions.CreditLimitExceededException;
+import university.exceptions.FailLimitExceededException;
+import university.exceptions.NotResearcherException;
+import university.models.Course;
+import university.models.RegistrationRequest;
+import university.models.ResearchProject;
+import university.models.Student;
+import university.patterns.UniversityDatabase;
+import university.utils.ResearchService;
+
+public final class StudentMenu {
+    private StudentMenu() {
+    }
+
+    public static void open(UniversityDatabase db, Student student) {
+        while (true) {
+            System.out.println("\n--- Student Menu ---");
+            System.out.println("1. View courses");
+            System.out.println("2. Register course directly");
+            System.out.println("3. Create registration request");
+            System.out.println("4. View marks");
+            System.out.println("5. Join research project");
+            System.out.println("0. Back");
+            int choice = ConsoleUtils.askInt("Choose: ");
+            if (choice == 0) {
+                return;
+            }
+            if (choice == 1) {
+                db.getCourses().forEach(System.out::println);
+            } else if (choice == 2) {
+                registerDirect(db, student);
+            } else if (choice == 3) {
+                createRequest(db, student);
+            } else if (choice == 4) {
+                student.getMarks().forEach((k, v) -> System.out.println(k + " -> " + v));
+            } else if (choice == 5) {
+                joinProject(db, student);
+            }
+        }
+    }
+
+    private static void registerDirect(UniversityDatabase db, Student student) {
+        String code = ConsoleUtils.ask("Course code: ");
+        Course course = db.findCourseByCode(code);
+        if (course == null) {
+            System.out.println("Course not found.");
+            return;
+        }
+        try {
+            student.registerCourse(course);
+            System.out.println("Registered.");
+        } catch (CreditLimitExceededException | FailLimitExceededException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void createRequest(UniversityDatabase db, Student student) {
+        String code = ConsoleUtils.ask("Course code: ");
+        Course course = db.findCourseByCode(code);
+        if (course == null) {
+            System.out.println("Course not found.");
+            return;
+        }
+        RegistrationRequest request = new RegistrationRequest(student, course);
+        request.setStatus(RequestStatus.PENDING);
+        db.getRegistrationRequests().add(request);
+        System.out.println("Request submitted.");
+    }
+
+    private static void joinProject(UniversityDatabase db, Student student) {
+        if (db.getResearchProjects().isEmpty()) {
+            System.out.println("No research projects.");
+            return;
+        }
+        for (int i = 0; i < db.getResearchProjects().size(); i++) {
+            System.out.println((i + 1) + ". " + db.getResearchProjects().get(i).getName());
+        }
+        int idx = ConsoleUtils.askInt("Project number: ") - 1;
+        if (idx < 0 || idx >= db.getResearchProjects().size()) {
+            System.out.println("Invalid project.");
+            return;
+        }
+        ResearchProject project = db.getResearchProjects().get(idx);
+        try {
+            ResearchService.joinProject(student, project);
+            System.out.println("Joined project.");
+        } catch (NotResearcherException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
