@@ -6,8 +6,8 @@ import java.util.List;
 
 public class ResearchProject implements Serializable {
     private final String name;
-    private final List<String> memberIds = new ArrayList<>();
-    private final List<ResearchPaper> papers = new ArrayList<>();
+    private List<String> memberIds = new ArrayList<>();
+    private List<ResearchPaper> papers = new ArrayList<>();
 
     public ResearchProject(String name) {
         this.name = name;

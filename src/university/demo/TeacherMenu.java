@@ -10,6 +10,7 @@ import university.models.Student;
 import university.models.Teacher;
 import university.patterns.UniversityDatabase;
 import university.utils.ResearchService;
+import university.models.Message;
 
 public final class TeacherMenu {
     private TeacherMenu() {
@@ -21,6 +22,8 @@ public final class TeacherMenu {
             System.out.println("1. Put mark");
             System.out.println("2. Add research paper");
             System.out.println("3. View papers sorted by date/citations/pages");
+            System.out.println("4. View messages");
+            System.out.println("5. Send message");
             System.out.println("0. Back");
             int choice = ConsoleUtils.askInt("Choose: ");
             if (choice == 0) {
@@ -32,6 +35,10 @@ public final class TeacherMenu {
                 addPaper(teacher);
             } else if (choice == 3) {
                 showSortedPapers(teacher);
+            } else if (choice == 4) {
+                showMessages(db, teacher);
+            } else if (choice == 5) {
+                sendMessage(db, teacher);
             }
         }
     }
@@ -92,5 +99,22 @@ public final class TeacherMenu {
         ResearchService.sortByCitations(papers).forEach(System.out::println);
         System.out.println("By pages:");
         ResearchService.sortByPages(papers).forEach(System.out::println);
+    }
+
+    private static void showMessages(UniversityDatabase db, Teacher teacher) {
+        List<Message> messages = db.getMessagesWithUser(teacher.getId());
+        if (messages.isEmpty()) {
+            System.out.println("No messages found.");
+        } else {
+            messages.forEach(System.out::println);
+        }
+    }
+
+    private static void sendMessage(UniversityDatabase db, Teacher teacher) {
+        String toId = ConsoleUtils.ask("To (user id): ");
+        String content = ConsoleUtils.ask("Message content: ");
+        Message message = new Message(teacher.getId(), toId, content);
+        db.getMessages().add(message);
+        System.out.println("Message sent.");
     }
 }

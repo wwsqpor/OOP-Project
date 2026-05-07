@@ -16,6 +16,7 @@ public class UniversityDatabase implements Serializable {
     private final List<RegistrationRequest> registrationRequests = new ArrayList<>();
     private final List<ResearchProject> researchProjects = new ArrayList<>();
     private final SystemLogger logger = new SystemLogger();
+    private final List<Message> messages = new ArrayList<>();
 
     private UniversityDatabase() {
     }
@@ -52,6 +53,10 @@ public class UniversityDatabase implements Serializable {
         return logger;
     }
 
+    public List<Message> getMessages() {
+        return messages;
+    }
+
     public Optional<User> findUserByEmail(String email) {
         return users.stream().filter(u -> u.getEmail().equalsIgnoreCase(email)).findFirst();
     }
@@ -63,6 +68,16 @@ public class UniversityDatabase implements Serializable {
             }
         }
         return null;
+    }
+
+    public List<Message> getMessagesWithUser(String userId) {
+        List<Message> userMessages = new ArrayList<>();
+        for (Message message : messages) {
+            if (message.getTo().equals(userId) || message.getFrom().equals(userId)) {
+                userMessages.add(message);
+            }
+        }
+        return userMessages;
     }
 
     public Course findCourseByCode(String code) {

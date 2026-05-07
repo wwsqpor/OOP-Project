@@ -5,7 +5,9 @@ src/university/demo/AdminMenu.java
 src/university/demo/TeacherMenu.java
 src/university/demo/Main.java
 src/university/demo/ResearcherMenu.java
+src/university/patterns/ResearcherDecorator.java
 src/university/patterns/SystemLogger.java
+src/university/patterns/ReportGenerator.java
 src/university/patterns/UniversityDatabase.java
 src/university/enums/LessonType.java
 src/university/enums/ManagerType.java
