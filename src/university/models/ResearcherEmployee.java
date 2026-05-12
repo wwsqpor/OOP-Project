@@ -6,22 +6,26 @@ import java.util.List;
 import university.interfaces.Researcher;
 
 public class ResearcherEmployee extends Employee implements Researcher {
-    private int hIndex;
     private final List<ResearchPaper> papers = new ArrayList<>();
     private final List<ResearchProject> researchProjects = new ArrayList<>();
 
-    public ResearcherEmployee(String id, String name, String email, String password, int hIndex) {
+    public ResearcherEmployee(String id, String name, String email, String password) {
         super(id, name, email, password);
-        this.hIndex = hIndex;
     }
 
     @Override
     public int getHIndex() {
-        return hIndex;
-    }
-
-    public void setHIndex(int hIndex) {
-        this.hIndex = Math.max(0, hIndex);
+        List<ResearchPaper> sorted = new ArrayList<>(papers);
+        sorted.sort((p1, p2) -> Integer.compare(p2.getCitations(), p1.getCitations()));
+        int h = 0;
+        for (int i = 0; i < sorted.size(); i++) {
+            if (sorted.get(i).getCitations() >= i + 1) {
+                h = i + 1;
+            } else {
+                break;
+            }
+        }
+        return h;
     }
 
     @Override

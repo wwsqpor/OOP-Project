@@ -29,29 +29,73 @@ public final class StudentMenu {
             System.out.println("4. View marks");
             System.out.println("5. Join research project");
             System.out.println("6. Rate teacher");
-            System.out.println("7. Get teachers info");
+            System.out.println("7. View course teacher info");
+            System.out.println("8. View transcript");
+            System.out.println("9. View schedule");
+            System.out.println("10. Financial info");
+            System.out.println("11. Pay for retake");
             System.out.println("0. Back");
             int choice = ConsoleUtils.askInt("Choose: ");
             if (choice == 0) {
                 return;
             }
-            if (choice == 1) {
-                db.getCourses().forEach(System.out::println);
-            } else if (choice == 2) {
-                registerDirect(db, student);
-            } else if (choice == 3) {
-                createRequest(db, student);
-            } else if (choice == 4) {
-                student.getMarks().forEach((k, v) -> System.out.println(k + " -> " + v));
-            } else if (choice == 5) {
-                joinProject(db, student);
-            } else if (choice == 6) {
-                rateTeacher(db);
-            } else if (choice == 7) {
-                getTeachersInfo(db);
+            switch (choice) {
+                case 1 -> db.getCourses().forEach(System.out::println);
+                case 2 -> registerDirect(db, student);
+                case 3 -> createRequest(db, student);
+                case 4 -> student.getMarks().forEach((k, v) -> System.out.println(k + " -> " + v));
+                case 5 -> joinProject(db, student);
+                case 6 -> rateTeacher(db);
+                case 7 -> viewCourseTeacherInfo(db);
+                case 8 -> viewTranscript(student);
+                case 9 -> university.utils.ScheduleService.viewStudentSchedule(db, student);
+                case 10 -> System.out.printf("Balance: %.2f | Scholarship: %s%n",
+                        student.getBalance(), student.isHasScholarship() ? "Yes" : "No");
+                case 11 -> payForRetake(student);
+                default -> System.out.println("Invalid choice.");
             }
-
         }
+    }
+
+    private static void payForRetake(Student student) {
+        double cost = 50000.0;
+        System.out.println("Retake cost: " + cost);
+        try {
+            student.pay(cost);
+            System.out.println("Payment successful. Remaining balance: " + student.getBalance());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void viewCourseTeacherInfo(UniversityDatabase db) {
+        String code = ConsoleUtils.ask("Course code: ");
+        Course course = db.findCourseByCode(code);
+        if (course == null) {
+            System.out.println("Course not found.");
+            return;
+        }
+        System.out.println("Instructors for " + course.getName() + ":");
+        course.getInstructors().forEach(t -> {
+            System.out.println(t.getName() + " | Title: " + t.getTitle() + " | Rating: "
+                    + (t.getRatingsCount() == 0 ? "N/A" : String.format("%.2f", t.getAverageRating())));
+        });
+    }
+
+    private static void viewTranscript(Student student) {
+        System.out.println("=== Transcript for " + student.getName() + " ===");
+        if (student.getMarks().isEmpty()) {
+            System.out.println("No marks recorded.");
+            return;
+        }
+        student.getMarks().forEach((code, mark) -> {
+            System.out.printf("%-10s : %s%n", code, mark.toString());
+        });
+        double totalGpa = student.getMarks().values().stream()
+                .mapToDouble(m -> m.total())
+                .average()
+                .orElse(0.0);
+        System.out.printf("Average Score: %.2f%n", totalGpa);
     }
 
     private static void registerDirect(UniversityDatabase db, Student student) {

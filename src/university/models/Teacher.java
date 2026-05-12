@@ -9,23 +9,20 @@ import university.interfaces.Researcher;
 public class Teacher extends Employee implements Researcher {
     private final TeacherTitle title;
     private final boolean researcher;
-    private int hIndex;
     private final List<ResearchPaper> researchPapers = new ArrayList<>();
     private final List<ResearchProject> researchProjects = new ArrayList<>();
     private final List<Course> teachingCourses = new ArrayList<>();
     private final List<Integer> ratings = new ArrayList<>();
 
-    public Teacher(String id, String name, String email, String password, TeacherTitle title, boolean researcher,
-            int hIndex) {
-        this(id, name, email, password, title, researcher, hIndex, new ArrayList<>());
+    public Teacher(String id, String name, String email, String password, TeacherTitle title) {
+        this(id, name, email, password, title, new ArrayList<>());
     }
 
-    public Teacher(String id, String name, String email, String password, TeacherTitle title, boolean researcher,
-            int hIndex, List<Course> teachingCourses) {
+    public Teacher(String id, String name, String email, String password, TeacherTitle title,
+            List<Course> teachingCourses) {
         super(id, name, email, password);
         this.title = title;
-        this.researcher = title == TeacherTitle.PROFESSOR || researcher;
-        this.hIndex = this.researcher ? Math.max(hIndex, title == TeacherTitle.PROFESSOR ? 3 : 0) : 0;
+        this.researcher = title == TeacherTitle.PROFESSOR;
         if (teachingCourses != null) {
             for (Course course : teachingCourses) {
                 if (course != null) {
@@ -43,15 +40,20 @@ public class Teacher extends Employee implements Researcher {
         return researcher;
     }
 
-    public void setHIndex(int hIndex) {
-        if (researcher) {
-            this.hIndex = Math.max(0, hIndex);
-        }
-    }
-
     @Override
     public int getHIndex() {
-        return hIndex;
+        if (!researcher) return 0;
+        List<ResearchPaper> sorted = new ArrayList<>(researchPapers);
+        sorted.sort((p1, p2) -> Integer.compare(p2.getCitations(), p1.getCitations()));
+        int h = 0;
+        for (int i = 0; i < sorted.size(); i++) {
+            if (sorted.get(i).getCitations() >= i + 1) {
+                h = i + 1;
+            } else {
+                break;
+            }
+        }
+        return h;
     }
 
     @Override

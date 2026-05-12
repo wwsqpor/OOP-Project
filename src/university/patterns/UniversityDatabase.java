@@ -13,8 +13,10 @@ public class UniversityDatabase implements Serializable {
     private final List<Course> courses = new ArrayList<>();
     private final List<NewsItem> news = new ArrayList<>();
     private final List<Complaint> complaints = new ArrayList<>();
-    private final List<RegistrationRequest> registrationRequests = new ArrayList<>();
     private final List<ResearchProject> researchProjects = new ArrayList<>();
+    private final List<EmployeeRequest> employeeRequests = new ArrayList<>();
+    private final List<Lesson> lessons = new ArrayList<>();
+    private final List<Room> rooms = new ArrayList<>();
     private final SystemLogger logger = new SystemLogger();
     private final List<Message> messages = new ArrayList<>();
 
@@ -47,6 +49,18 @@ public class UniversityDatabase implements Serializable {
 
     public List<ResearchProject> getResearchProjects() {
         return researchProjects;
+    }
+
+    public List<EmployeeRequest> getEmployeeRequests() {
+        return employeeRequests;
+    }
+
+    public List<Lesson> getLessons() {
+        return lessons;
+    }
+
+    public List<Room> getRooms() {
+        return rooms;
     }
 
     public SystemLogger getLogger() {

@@ -24,6 +24,8 @@ public class Student extends User implements Researcher {
     private int hIndex;
     private final List<ResearchPaper> researchPapers = new ArrayList<>();
     private final List<ResearchProject> researchProjects = new ArrayList<>();
+    private double balance = 0.0;
+    private boolean hasScholarship = true;
 
     public Student(String id, String name, String email, String password, int year, DegreeType degreeType) {
         super(id, name, email, password);
@@ -73,11 +75,17 @@ public class Student extends User implements Researcher {
 
     @Override
     public int getHIndex() {
-        return hIndex;
-    }
-
-    public void setHIndex(int hIndex) {
-        this.hIndex = hIndex;
+        List<ResearchPaper> sorted = new ArrayList<>(researchPapers);
+        sorted.sort((p1, p2) -> Integer.compare(p2.getCitations(), p1.getCitations()));
+        int h = 0;
+        for (int i = 0; i < sorted.size(); i++) {
+            if (sorted.get(i).getCitations() >= i + 1) {
+                h = i + 1;
+            } else {
+                break;
+            }
+        }
+        return h;
     }
 
     @Override
@@ -132,6 +140,16 @@ public class Student extends User implements Researcher {
             }
         }
         return failCount;
+    }
+
+    public double getBalance() { return balance; }
+    public void setBalance(double balance) { this.balance = balance; }
+    public boolean isHasScholarship() { return hasScholarship; }
+    public void setHasScholarship(boolean hasScholarship) { this.hasScholarship = hasScholarship; }
+
+    public void pay(double amount) throws Exception {
+        if (balance < amount) throw new Exception("Insufficient funds.");
+        balance -= amount;
     }
 
     @Override

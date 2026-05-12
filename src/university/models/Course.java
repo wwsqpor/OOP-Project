@@ -5,19 +5,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import university.enums.Faculty;
+
 public class Course implements Serializable {
     private final String code;
     private final String name;
     private final int credits;
+    private final Faculty targetFaculty;
+    private final int targetYear;
     private final List<Teacher> instructors = new ArrayList<>();
 
-    public Course(String code, String name, int credits, Teacher instructor) {
+    public Course(String code, String name, int credits, Faculty targetFaculty, int targetYear) {
         this.code = code;
         this.name = name;
         this.credits = credits;
-        if (instructor != null) {
-            addInstructor(instructor);
-        }
+        this.targetFaculty = targetFaculty;
+        this.targetYear = targetYear;
     }
 
     public String getCode() {
@@ -30,6 +33,14 @@ public class Course implements Serializable {
 
     public int getCredits() {
         return credits;
+    }
+
+    public Faculty getTargetFaculty() {
+        return targetFaculty;
+    }
+
+    public int getTargetYear() {
+        return targetYear;
     }
 
     public List<Teacher> getInstructors() {
