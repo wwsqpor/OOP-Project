@@ -3,7 +3,7 @@ package university.models;
 import java.io.Serializable;
 import university.interfaces.Printable;
 
-public abstract class User implements Serializable, Printable {
+public abstract class User implements Serializable, Printable, Comparable<User> {
     private final String id;
     private final String name;
     private final String email;
@@ -28,6 +28,11 @@ public abstract class User implements Serializable, Printable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public int compareTo(User other) {
+        return this.name.compareToIgnoreCase(other.name);
     }
 
     @Override

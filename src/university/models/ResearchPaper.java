@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
 
-public class ResearchPaper implements Serializable {
+public class ResearchPaper implements Serializable, Comparable<ResearchPaper> {
     public static final Comparator<ResearchPaper> BY_DATE_PUBLISHED = Comparator
             .comparing(ResearchPaper::getPublishedAt);
     public static final Comparator<ResearchPaper> BY_CITATIONS = Comparator.comparingInt(ResearchPaper::getCitations);
@@ -55,6 +55,16 @@ public class ResearchPaper implements Serializable {
 
     public int getPages() {
         return pages;
+    }
+
+    @Override
+    public int compareTo(ResearchPaper other) {
+        // Natural ordering: by citations (descending), then by date (descending)
+        int citComp = Integer.compare(other.citations, this.citations);
+        if (citComp != 0) {
+            return citComp;
+        }
+        return other.publishedAt.compareTo(this.publishedAt);
     }
 
     @Override
