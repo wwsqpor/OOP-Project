@@ -6,7 +6,5 @@ public class Admin extends Employee {
     }
 
     @Override
-    public String getRole() {
-        return "Admin";
-    }
+    public String getRole() { return "Admin"; }
 }

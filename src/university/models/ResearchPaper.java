@@ -12,13 +12,18 @@ public class ResearchPaper implements Serializable {
 
     private final String title;
     private final String author;
+    private final String journal;
+    private final String doi;
     private final LocalDate publishedAt;
     private final int citations;
     private final int pages;
 
-    public ResearchPaper(String title, String author, LocalDate publishedAt, int citations, int pages) {
+    public ResearchPaper(String title, String author, String journal, String doi, LocalDate publishedAt, int citations,
+            int pages) {
         this.title = title;
         this.author = author;
+        this.journal = journal;
+        this.doi = doi;
         this.publishedAt = publishedAt;
         this.citations = citations;
         this.pages = pages;
@@ -30,6 +35,14 @@ public class ResearchPaper implements Serializable {
 
     public String getAuthor() {
         return author;
+    }
+
+    public String getJournal() {
+        return journal;
+    }
+
+    public String getDoi() {
+        return doi;
     }
 
     public LocalDate getPublishedAt() {
@@ -46,6 +59,7 @@ public class ResearchPaper implements Serializable {
 
     @Override
     public String toString() {
-        return title + " by " + author + " (citations=" + citations + ", pages=" + pages + ")";
+        return String.format("%s by %s in %s (DOI: %s, citations=%d, pages=%d)",
+                title, author, journal, doi, citations, pages);
     }
 }

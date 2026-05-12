@@ -2,6 +2,7 @@ package university.patterns;
 
 import university.interfaces.Researcher;
 import university.models.ResearchPaper;
+import university.models.ResearchProject;
 import university.models.User;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ public class ResearcherDecorator implements Researcher, Serializable {
 
     private final User wrappedUser;
     private final List<ResearchPaper> researchPapers = new ArrayList<>();
+    private final List<ResearchProject> researchProjects = new ArrayList<>();
     private int hIndex = 0;
 
     public ResearcherDecorator(User wrappedUser) {
@@ -43,6 +45,16 @@ public class ResearcherDecorator implements Researcher, Serializable {
         for (ResearchPaper paper : researchPapers) {
             System.out.println(paper);
         }
+    }
+
+    @Override
+    public List<ResearchProject> getResearchProjects() {
+        return researchProjects;
+    }
+
+    @Override
+    public void addResearchProject(ResearchProject project) {
+        researchProjects.add(project);
     }
 
     @Override

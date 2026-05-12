@@ -2,17 +2,22 @@ package university.models;
 
 import java.io.Serializable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Course implements Serializable {
     private final String code;
     private final String name;
     private final int credits;
-    private Teacher teacher;
+    private final List<Teacher> instructors = new ArrayList<>();
 
-    public Course(String code, String name, int credits, Teacher teacher) {
+    public Course(String code, String name, int credits, Teacher instructor) {
         this.code = code;
         this.name = name;
         this.credits = credits;
-        setTeacher(teacher);
+        if (instructor != null) {
+            addInstructor(instructor);
+        }
     }
 
     public String getCode() {
@@ -27,20 +32,20 @@ public class Course implements Serializable {
         return credits;
     }
 
-    public Teacher getTeacher() {
-        return teacher;
+    public List<Teacher> getInstructors() {
+        return instructors;
     }
 
-    public void setTeacher(Teacher teacher) {
-        if (this.teacher == teacher) {
-            return;
+    public void addInstructor(Teacher teacher) {
+        if (teacher != null && !instructors.contains(teacher)) {
+            instructors.add(teacher);
+            teacher.addTeachingCourse(this);
         }
-        if (this.teacher != null) {
-            this.teacher.removeTeachingCourse(this);
-        }
-        this.teacher = teacher;
-        if (this.teacher != null) {
-            this.teacher.addTeachingCourse(this);
+    }
+
+    public void removeInstructor(Teacher teacher) {
+        if (instructors.remove(teacher)) {
+            teacher.removeTeachingCourse(this);
         }
     }
 

@@ -2,7 +2,9 @@ package university.utils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import university.exceptions.NotResearcherException;
 import university.interfaces.Researcher;
 import university.models.ResearchPaper;
@@ -31,10 +33,25 @@ public final class ResearchService {
         return copy;
     }
 
-    public static void joinProject(User user, ResearchProject project) throws NotResearcherException {
-        if (!(user instanceof Researcher)) {
-            throw new NotResearcherException("Only researchers can join projects");
+    public static void printAllUniversityPapers(UniversityDatabase db, Comparator<ResearchPaper> comparator) {
+        List<ResearchPaper> allPapers = new ArrayList<>();
+        for (User user : db.getUsers()) {
+            if (user instanceof Researcher researcher) {
+                allPapers.addAll(researcher.getResearchPapers());
+            }
         }
-        project.addMember(user.getId());
+        // Remove duplicates if any
+        Set<ResearchPaper> uniquePapers = new HashSet<>(allPapers);
+        List<ResearchPaper> sortedPapers = new ArrayList<>(uniquePapers);
+        sortedPapers.sort(comparator);
+
+        System.out.println("=== All University Research Papers ===");
+        for (ResearchPaper paper : sortedPapers) {
+            System.out.println(paper);
+        }
+    }
+
+    public static void joinProject(User user, ResearchProject project) throws NotResearcherException {
+        project.addParticipant(user);
     }
 }

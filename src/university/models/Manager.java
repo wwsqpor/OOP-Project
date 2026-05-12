@@ -10,9 +10,7 @@ public class Manager extends Employee {
         this.type = type;
     }
 
-    public ManagerType getType() {
-        return type;
-    }
+    public ManagerType getType() { return type; }
 
     @Override
     public String getRole() {

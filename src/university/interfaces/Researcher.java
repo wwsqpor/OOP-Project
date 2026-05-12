@@ -3,6 +3,7 @@ package university.interfaces;
 import java.util.Comparator;
 import java.util.List;
 import university.models.ResearchPaper;
+import university.models.ResearchProject;
 
 public interface Researcher {
     int getHIndex();
@@ -12,4 +13,8 @@ public interface Researcher {
     void addResearchPaper(ResearchPaper paper);
 
     void PrintPapers(Comparator<ResearchPaper> c);
+
+    List<ResearchProject> getResearchProjects();
+
+    void addResearchProject(ResearchProject project);
 }

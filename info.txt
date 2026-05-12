@@ -1,0 +1,23 @@
+Lesson Types: The LessonType enum in LessonType.java supports LECTURE and PRACTICE.
+
+Student Bachelor: The DegreeType enum in DegreeType.java supports BACHELOR.
+
+4th Year Supervisor: Updated Student.java to require a Researcher supervisor for 4th-year students, throwing a LowHIndexException if the supervisor's h-index is less than 3.
+
+Multiple Instructors: Modified Course.java to support multiple instructors (List<Teacher>) instead of a single one.
+
+Researcher Hierarchy:
+
+Student now implements the Researcher interface.
+Teacher implements Researcher, with Professors automatically assigned as researchers with a minimum h-index of 3.
+ResearcherEmployee is available for researchers who are neither students nor teachers.
+
+Research Objects:
+Updated the Researcher interface and all implementations to support ResearchProject objects.
+Expanded ResearchPaper fields to include journal and doi, alongside citations, title (name), author, pages, and publishedAt (date).
+Sorting & Printing: All Researcher implementations now include the PrintPapers(Comparator c) method to print papers sorted by date, citations, or length (pages).
+
+I've completed all tasks, including adding the topic field and researcher joining constraint to ResearchProject,
+implementing a university-wide paper printing method in ResearchService, and updating ReportGenerator with TopResearchersReport 
+and AcademicPerformanceReport (which now correctly uses Mark::total). 
+I also confirmed the use of Singleton, Strategy, Decorator, and Observer design patterns.

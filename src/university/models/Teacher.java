@@ -11,6 +11,7 @@ public class Teacher extends Employee implements Researcher {
     private final boolean researcher;
     private int hIndex;
     private final List<ResearchPaper> researchPapers = new ArrayList<>();
+    private final List<ResearchProject> researchProjects = new ArrayList<>();
     private final List<Course> teachingCourses = new ArrayList<>();
     private final List<Integer> ratings = new ArrayList<>();
 
@@ -28,7 +29,7 @@ public class Teacher extends Employee implements Researcher {
         if (teachingCourses != null) {
             for (Course course : teachingCourses) {
                 if (course != null) {
-                    course.setTeacher(this);
+                    course.addInstructor(this);
                 }
             }
         }
@@ -71,6 +72,18 @@ public class Teacher extends Employee implements Researcher {
         sortedPapers.sort(c);
         for (ResearchPaper paper : sortedPapers) {
             System.out.println(paper);
+        }
+    }
+
+    @Override
+    public List<ResearchProject> getResearchProjects() {
+        return researchProjects;
+    }
+
+    @Override
+    public void addResearchProject(ResearchProject project) {
+        if (researcher) {
+            researchProjects.add(project);
         }
     }
 

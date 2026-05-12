@@ -8,6 +8,7 @@ import university.interfaces.Researcher;
 public class ResearcherEmployee extends Employee implements Researcher {
     private int hIndex;
     private final List<ResearchPaper> papers = new ArrayList<>();
+    private final List<ResearchProject> researchProjects = new ArrayList<>();
 
     public ResearcherEmployee(String id, String name, String email, String password, int hIndex) {
         super(id, name, email, password);
@@ -40,6 +41,16 @@ public class ResearcherEmployee extends Employee implements Researcher {
         for (ResearchPaper paper : sortedPapers) {
             System.out.println(paper);
         }
+    }
+
+    @Override
+    public List<ResearchProject> getResearchProjects() {
+        return researchProjects;
+    }
+
+    @Override
+    public void addResearchProject(ResearchProject project) {
+        researchProjects.add(project);
     }
 
     @Override
