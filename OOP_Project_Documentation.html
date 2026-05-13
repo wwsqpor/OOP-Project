@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOP Project — University Information System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --border: #e2e0d8;
+    --accent: #2a52be;
+    --accent-light: #eef1fb;
+    --text-primary: #1a1a1a;
+    --text-secondary: #5a5a5a;
+    --text-muted: #9a9a9a;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --tag-green-bg: #eaf4ea; --tag-green: #2a6e2a;
+    --tag-blue-bg: #edf0fc; --tag-blue: #2a3fbe;
+    --tag-orange-bg: #fef3ea; --tag-orange: #8a4500;
+    --tag-red-bg: #fdedf0; --tag-red: #9b1d38;
+    --tag-purple-bg: #f2eeff; --tag-purple: #5a2db8;
+    --tag-teal-bg: #eaf8f5; --tag-teal: #1a6d5e;
+    --tag-gray-bg: #f2f1ee; --tag-gray: #4a4a4a;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ---- Header ---- */
+  .doc-header {
+    border-bottom: 1.5px solid var(--border);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+  .doc-header .label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .doc-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .doc-header .subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  /* ---- Badges / Tags ---- */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+  }
+  .tag-green  { background: var(--tag-green-bg);  color: var(--tag-green); }
+  .tag-blue   { background: var(--tag-blue-bg);   color: var(--tag-blue); }
+  .tag-orange { background: var(--tag-orange-bg); color: var(--tag-orange); }
+  .tag-red    { background: var(--tag-red-bg);    color: var(--tag-red); }
+  .tag-purple { background: var(--tag-purple-bg); color: var(--tag-purple); }
+  .tag-teal   { background: var(--tag-teal-bg);   color: var(--tag-teal); }
+  .tag-gray   { background: var(--tag-gray-bg);   color: var(--tag-gray); }
+
+  /* ---- Sections ---- */
+  .section { margin-bottom: 44px; }
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ---- Project Files Table ---- */
+  .file-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .file-table thead th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 6px 12px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .file-table tbody tr {
+    border-bottom: 1px solid var(--border);
+  }
+  .file-table tbody tr:last-child { border-bottom: none; }
+  .file-table tbody td {
+    padding: 9px 12px;
+    vertical-align: top;
+  }
+  .file-table .file-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .file-table .file-desc {
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ---- Package Group Cards ---- */
+  .pkg-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 600px) { .pkg-grid { grid-template-columns: 1fr; } }
+
+  .pkg-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .pkg-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .pkg-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .pkg-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .pkg-file-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .pkg-file-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pkg-file-list .fname {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--accent);
+  }
+  .pkg-file-list .fdesc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* ---- Code blocks ---- */
+  .code-section {
+    margin-bottom: 36px;
+  }
+  .code-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 12px;
+  }
+  .code-header .file-path {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex: 1;
+  }
+  .code-header .file-role {
+    font-size: 12px;
+    color: var(--text-muted);
+    flex: 1;
+    text-align: right;
+    font-style: italic;
+  }
+  pre {
+    background: #1c1e26;
+    color: #cdd3de;
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.65;
+    overflow-x: auto;
+    border: 1px solid #2a2d3a;
+  }
+  .kw  { color: #c792ea; }
+  .cls { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cmt { color: #546e7a; font-style: italic; }
+  .typ { color: #ffcb6b; }
+  .fn  { color: #89ddff; }
+  .num { color: #f78c6c; }
+
+  /* ---- Enum / Exception items ---- */
+  .enum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .enum-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .enum-card .ec-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .enum-card .ec-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .ev {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  /* ---- Patterns ---- */
+  .pattern-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pattern-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .pattern-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    margin-top: 1px;
+  }
+  .pattern-detail .pname {
+    font-weight: 500;
+    font-size: 13.5px;
+    margin-bottom: 3px;
+  }
+  .pattern-detail .pfiles {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+  .pattern-detail .pdesc {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* ---- Requirements map ---- */
+  .req-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .req-table tr { border-bottom: 1px solid var(--border); }
+  .req-table tr:last-child { border-bottom: none; }
+  .req-table td { padding: 10px 12px; vertical-align: top; }
+  .req-table td:first-child {
+    width: 30%;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+  .req-table td:last-child {
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .req-table code {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* ---- Use case diagram ---- */
+  .uc-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  @media (max-width: 620px) { .uc-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .uc-actor {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .uc-actor .actor-icon {
+    font-size: 22px;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+  .uc-actor .actor-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  .uc-actor ul {
+    list-style: none;
+    text-align: left;
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .uc-actor ul li::before { content: "·  "; color: var(--text-muted); }
+
+  /* ---- Divider ---- */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
+
+  /* ---- Interface list ---- */
+  .iface-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 580px) { .iface-list { grid-template-columns: 1fr; } }
+
+  .iface-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 13px 15px;
+  }
+  .iface-card .iname {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  .iface-card .imethods {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .iface-card .imethods li {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .iface-card .idesc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ HEADER ============ -->
+  <div class="doc-header">
+    <div class="label">OOP Project · Java</div>
+    <h1>University Information System</h1>
+    <div class="subtitle">Research-oriented university management system — file-by-file code documentation</div>
+    <div class="badge-row">
+      <span class="tag tag-blue">Design Patterns</span>
+      <span class="tag tag-green">Serialization</span>
+      <span class="tag tag-purple">Observer Pattern</span>
+      <span class="tag tag-teal">Research Module</span>
+      <span class="tag tag-orange">Role-based Auth</span>
+      <span class="tag tag-gray">Console Demo</span>
+    </div>
+  </div>
+
+  <!-- ============ 1. PROJECT ROOT ============ -->
+  <div class="section">
+    <div class="section-title">1 · Project root files</div>
+    <table class="file-table">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="file-name">.gitignore</td><td class="file-desc">Defines files Git should ignore.</td></tr>
+        <tr><td class="file-name">CaseDiagram.png</td><td class="file-desc">Use case diagram image for project behaviour and actors.</td></tr>
+        <tr><td class="file-name">README.md</td><td class="file-desc">Short project overview and run instructions.</td></tr>
+        <tr><td class="file-name">UML.mdj</td><td class="file-desc">StarUML project file containing class/use-case diagram sources.</td></tr>
+        <tr><td class="file-name">sources.txt</td><td class="file-desc">List of source files used by the Java compiler.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ 2. ALL JAVA FILES ============ -->
+  <div class="section">
+    <div class="section-title">2 · All Java source files</div>
+    <div class="pkg-grid">
+
+      <!-- data -->
+      <div class="pkg-card">
+        <div class="pkg-card-header">
+          <div class="pkg-dot" style="background:#2a52be;"></div>
+          <span class="pkg-name">university.data</span>
+        </div>
+        <ul class="pkg-file-list">
+          <li><span class="fname">DataStorage.java</span><span class="fdesc">Serializable save/load helper for persistent data files.</span></li>
+        </ul>
+      </div>
+
+      <!-- enums -->
+      <div class="pkg-card">
+        <div class="pkg-card-header">
+          <div class="pkg-dot" style="background:#8a4500;"></div>
+          <span class="pkg-name">university.enums</span>
+        </div>
+        <ul class="pkg-file-list">
+          <li><span class="fname">DegreeType.java</span><span class="fdesc">Student degree levels (BACHELOR, MASTER, PHD).</span></li>
+          <li><span class="fname">Faculty.java</span><span class="fdesc">University faculties/schools.</span></li>
+          <li><span class="fname">LessonType.java</span><span class="fdesc">Lecture, practice, or lab lesson type.</span></li>
+          <li><span class="fname">ManagerType.java</span><span class="fdesc">Manager department type.</span></li>
+          <li><span class="fname">RequestStatus.java</span><span class="fdesc">Registration request workflow status.</span></li>
+          <li><span class="fname">TeacherTitle.java</span><span class="fdesc">Teacher academic title.</span></li>
+        </ul>
+      </div>
+
+      <!-- exceptions -->
+      <div class="pkg-card">
+        <div class="pkg-card-header">
+          <div class="pkg-dot" style="background:#9b1d38;"></div>
+          <span class="pkg-name">university.exceptions</span>
+        </div>
+        <ul class="pkg-file-list">
+          <li><span class="fname">AuthenticationException</span><span class="fdesc">Invalid login credentials.</span></li>
+          <li><span class="fname">CourseNotTaughtException</span><span class="fdesc">Teacher edits a course they don't teach.</span></li>
+          <li><span class="fname">CreditLimitExceededException</span><span class="fdesc">Student exceeds credit limit.</span></li>
+          <li><span class="fname">FailLimitExceededException</span><span class="fdesc">Excessive course failures.</span></li>
+          <li><span class="fname">LowHIndexException</span><span class="fdesc">Supervisor h-index below minimum (3).</span></li>
+          <li><span class="fname">NotResearcherException</span><span class="fdesc">Non-researcher joins research work.</span></li>
+        </ul>
+      </div>
+
+      <!-- interfaces -->
+      <div class="pkg-card">
+        <div class="pkg-card-header">
+          <div class="pkg-dot" style="background:#5a2db8;"></div>
+          <span class="pkg-name">university.interfaces</span>
+        </div>
+        <ul class="pkg-file-list">
+          <li><span class="fname">Observable.java</span><span class="fdesc">Observer-pattern source interface.</span></li>
+          <li><span class="fname">Observer.java</span><span class="fdesc">Observer-pattern listener interface.</span></li>
+          <li><span class="fname">Printable.java</span><span class="fdesc">Display/print interface for domain objects.</span></li>
+          <li><span class="fname">Researcher.java</span><span class="fdesc">Research capability: papers, projects, h-index, sorting.</span></li>
+        </ul>
+      </div>
+
+      <!-- models -->
+      <div class="pkg-card" style="grid-column: span 2;">
+        <div class="pkg-card-header">
+          <div class="pkg-dot" style="background:#1a6d5e;"></div>
+          <span class="pkg-name">university.models</span>
+        </div>
+        <ul class="pkg-file-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 7px 24px;">
+          <li><span class="fname">User.java</span><span class="fdesc">Base authenticated user (id, name, email, password).</span></li>
+          <li><span class="fname">Employee.java</span><span class="fdesc">Abstract employee base extending User.</span></li>
+          <li><span class="fname">Admin.java</span><span class="fdesc">Admin user subclass.</span></li>
+          <li><span class="fname">Manager.java</span><span class="fdesc">Manager employee with ManagerType.</span></li>
+          <li><span class="fname">Teacher.java</span><span class="fdesc">Course teaching, marks, complaints, papers.</span></li>
+          <li><span class="fname">Student.java</span><span class="fdesc">Registration, marks, GPA, transcript, supervisor rules.</span></li>
+          <li><span class="fname">ResearcherEmployee.java</span><span class="fdesc">Employee implementing Researcher interface.</span></li>
+          <li><span class="fname">Course.java</span><span class="fdesc">Instructors, students, lessons, marks.</span></li>
+          <li><span class="fname">Lesson.java</span><span class="fdesc">Type, topic, room, and time.</span></li>
+          <li><span class="fname">Mark.java</span><span class="fdesc">Attestation & final scores with total computation.</span></li>
+          <li><span class="fname">ResearchPaper.java</span><span class="fdesc">Citations, DOI, pages, date, comparators.</span></li>
+          <li><span class="fname">ResearchProject.java</span><span class="fdesc">Topic, participants, and associated papers.</span></li>
+          <li><span class="fname">NewsItem.java</span><span class="fdesc">News model with observer notification.</span></li>
+          <li><span class="fname">Message.java</span><span class="fdesc">Employee-to-employee message.</span></li>
+          <li><span class="fname">Complaint.java</span><span class="fdesc">Employee complaint/request object.</span></li>
+          <li><span class="fname">RegistrationRequest.java</span><span class="fdesc">Student course registration request.</span></li>
+        </ul>
+      </div>
+
+      <!-- patterns -->
+      <div class="pkg-card">
+        <div class="pkg-card-header">
+          <div class="pkg-dot" style="background:#2a6e2a;"></div>
+          <span class="pkg-name">university.patterns</span>
+        </div>
+        <ul class="pkg-file-list">
+          <li><span class="fname">UniversityDatabase.java</span><span class="fdesc">Singleton — in-memory database.</span></li>
+          <li><span class="fname">SystemLogger.java</span><span class="fdesc">Singleton logger for system actions.</span></li>
+          <li><span class="fname">ResearcherDecorator.java</span><span class="fdesc">Decorator adding research behaviour to any User.</span></li>
+          <li><span class="fname">ReportGenerator.java</span><span class="fdesc">Strategy-based reporting utility.</span></li>
+        </ul>
+      </div>
+
+      <!-- utils -->
+      <div class="pkg-card">
+        <div class="pkg-card-header">
+          <div class="pkg-dot" style="background:#888;"></div>
+          <span class="pkg-name">university.utils</span>
+        </div>
+        <ul class="pkg-file-list">
+          <li><span class="fname">AuthService.java</span><span class="fdesc">Validates email/password; implements Observable.</span></li>
+          <li><span class="fname">ResearchService.java</span><span class="fdesc">Sorted papers and top-cited researcher queries.</span></li>
+        </ul>
+      </div>
+
+      <!-- demo -->
+      <div class="pkg-card">
+        <div class="pkg-card-header">
+          <div class="pkg-dot" style="background:#c0a000;"></div>
+          <span class="pkg-name">university.demo</span>
+        </div>
+        <ul class="pkg-file-list">
+          <li><span class="fname">Main.java</span><span class="fdesc">Entry point, seed data, auth loop, role routing.</span></li>
+          <li><span class="fname">AdminMenu.java</span><span class="fdesc">Console menu for admin actions.</span></li>
+          <li><span class="fname">ManagerMenu.java</span><span class="fdesc">Courses, registration, reports, news.</span></li>
+          <li><span class="fname">TeacherMenu.java</span><span class="fdesc">Marks, messages, complaints, papers.</span></li>
+          <li><span class="fname">StudentMenu.java</span><span class="fdesc">Registration, marks, transcript, teacher rating.</span></li>
+          <li><span class="fname">ResearcherMenu.java</span><span class="fdesc">Papers, projects, researcher rankings.</span></li>
+          <li><span class="fname">ConsoleUtils.java</span><span class="fdesc">Shared input helpers (Scanner, ask, pause).</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ 3. ENUMS ============ -->
+  <div class="section">
+    <div class="section-title">3 · Enumerations</div>
+    <div class="enum-grid">
+      <div class="enum-card">
+        <div class="ec-name">DegreeType</div>
+        <div class="ec-values">
+          <span class="ev">BACHELOR</span><span class="ev">MASTER</span><span class="ev">PHD</span>
+        </div>
+      </div>
+      <div class="enum-card">
+        <div class="ec-name">Faculty</div>
+        <div class="ec-values">
+          <span class="ev">IT</span><span class="ev">BUSINESS</span><span class="ev">ENGINEERING</span><span class="ev">SCIENCE</span><span class="ev">HUMANITIES</span>
+        </div>
+      </div>
+      <div class="enum-card">
+        <div class="ec-name">LessonType</div>
+        <div class="ec-values">
+          <span class="ev">LECTURE</span><span class="ev">PRACTICE</span><span class="ev">LAB</span>
+        </div>
+      </div>
+      <div class="enum-card">
+        <div class="ec-name">ManagerType</div>
+        <div class="ec-values">
+          <span class="ev">OR</span><span class="ev">DEAN_OFFICE</span>
+        </div>
+      </div>
+      <div class="enum-card">
+        <div class="ec-name">RequestStatus</div>
+        <div class="ec-values">
+          <span class="ev">PENDING</span><span class="ev">APPROVED</span><span class="ev">REJECTED</span>
+        </div>
+      </div>
+      <div class="enum-card">
+        <div class="ec-name">TeacherTitle</div>
+        <div class="ec-values">
+          <span class="ev">PROFESSOR</span><span class="ev">ASSOCIATE_PROFESSOR</span><span class="ev">SENIOR_LECTURER</span><span class="ev">LECTURER</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 4. INTERFACES ============ -->
+  <div class="section">
+    <div class="section-title">4 · Interfaces</div>
+    <div class="iface-list">
+      <div class="iface-card">
+        <div class="iname">Observable</div>
+        <ul class="imethods">
+          <li>addObserver(Observer observer)</li>
+          <li>notifyObservers(String event)</li>
+        </ul>
+        <div class="idesc">Observer-pattern source. Implemented by AuthService.</div>
+      </div>
+      <div class="iface-card">
+        <div class="iname">Observer</div>
+        <ul class="imethods">
+          <li>onEvent(String event)</li>
+        </ul>
+        <div class="idesc">Observer-pattern listener. Implemented by SystemLogger.</div>
+      </div>
+      <div class="iface-card">
+        <div class="iname">Printable</div>
+        <ul class="imethods">
+          <li>String print()</li>
+        </ul>
+        <div class="idesc">Domain-display contract. Implemented by User (and subclasses).</div>
+      </div>
+      <div class="iface-card">
+        <div class="iname">Researcher</div>
+        <ul class="imethods">
+          <li>int getHIndex()</li>
+          <li>List&lt;ResearchPaper&gt; getResearchPapers()</li>
+          <li>void addResearchPaper(ResearchPaper)</li>
+          <li>void PrintPapers(Comparator&lt;ResearchPaper&gt;)</li>
+        </ul>
+        <div class="idesc">Research capability contract. Implemented by Teacher, ResearcherEmployee, and ResearcherDecorator.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5. CODE EXCERPTS ============ -->
+  <div class="section">
+    <div class="section-title">5 · Key code excerpts</div>
+
+    <!-- DataStorage -->
+    <div class="code-section">
+      <div class="code-header">
+        <span class="file-path">university/data/DataStorage.java</span>
+        <span class="file-role">Serializable save/load</span>
+      </div>
+      <pre><span class="kw">public final class</span> <span class="cls">DataStorage</span> {
+  <span class="kw">private</span> DataStorage() {}
+
+  <span class="kw">public static void</span> <span class="fn">save</span>(<span class="cls">UniversityDatabase</span> db, <span class="typ">String</span> path) {
+    <span class="kw">try</span> (<span class="cls">ObjectOutputStream</span> oos = <span class="kw">new</span> <span class="cls">ObjectOutputStream</span>(<span class="kw">new</span> <span class="cls">FileOutputStream</span>(path))) {
+      oos.<span class="fn">writeObject</span>(db);
+    } <span class="kw">catch</span> (<span class="cls">Exception</span> ignored) {}
+  }
+
+  <span class="kw">public static</span> <span class="cls">UniversityDatabase</span> <span class="fn">load</span>(<span class="typ">String</span> path) {
+    <span class="kw">try</span> (<span class="cls">ObjectInputStream</span> ois = <span class="kw">new</span> <span class="cls">ObjectInputStream</span>(<span class="kw">new</span> <span class="cls">FileInputStream</span>(path))) {
+      <span class="kw">return</span> (<span class="cls">UniversityDatabase</span>) ois.<span class="fn">readObject</span>();
+    } <span class="kw">catch</span> (<span class="cls">Exception</span> e) { <span class="kw">return null</span>; }
+  }
+}</pre>
+    </div>
+
+    <!-- Student.registerCourse -->
+    <div class="code-section">
+      <div class="code-header">
+        <span class="file-path">university/models/Student.java</span>
+        <span class="file-role">Credit & fail limit enforcement</span>
+      </div>
+      <pre><span class="kw">public void</span> <span class="fn">registerCourse</span>(<span class="cls">Course</span> course)
+    <span class="kw">throws</span> <span class="cls">CreditLimitExceededException</span>, <span class="cls">FailLimitExceededException</span> {
+
+  <span class="kw">if</span> (<span class="fn">countFailures</span>() >= MAX_FAILS)
+    <span class="kw">throw new</span> <span class="cls">FailLimitExceededException</span>(<span class="str">"Student reached fail limit of "</span> + MAX_FAILS);
+
+  <span class="kw">int</span> currentCredits = courses.<span class="fn">stream</span>().<span class="fn">mapToInt</span>(<span class="cls">Course</span>::<span class="fn">getCredits</span>).<span class="fn">sum</span>();
+  <span class="kw">if</span> (currentCredits + course.<span class="fn">getCredits</span>() > MAX_CREDITS)
+    <span class="kw">throw new</span> <span class="cls">CreditLimitExceededException</span>(<span class="str">"Credit limit exceeded (max 21)"</span>);
+
+  courses.<span class="fn">add</span>(course);
+  course.<span class="fn">addStudent</span>(<span class="kw">this</span>);
+}</pre>
+    </div>
+
+    <!-- UniversityDatabase singleton -->
+    <div class="code-section">
+      <div class="code-header">
+        <span class="file-path">university/patterns/UniversityDatabase.java</span>
+        <span class="file-role">Singleton pattern</span>
+      </div>
+      <pre><span class="kw">public class</span> <span class="cls">UniversityDatabase</span> <span class="kw">implements</span> <span class="cls">Serializable</span> {
+  <span class="kw">private static final</span> <span class="cls">UniversityDatabase</span> INSTANCE = <span class="kw">new</span> <span class="cls">UniversityDatabase</span>();
+
+  <span class="kw">private final</span> List&lt;<span class="cls">User</span>&gt; users = <span class="kw">new</span> <span class="cls">ArrayList</span>&lt;&gt;();
+  <span class="kw">private final</span> List&lt;<span class="cls">Course</span>&gt; courses = <span class="kw">new</span> <span class="cls">ArrayList</span>&lt;&gt;();
+  <span class="kw">private final</span> <span class="cls">SystemLogger</span> logger = <span class="kw">new</span> <span class="cls">SystemLogger</span>();
+  <span class="cmt">// ... news, complaints, requests, projects, messages</span>
+
+  <span class="kw">private</span> UniversityDatabase() {}
+
+  <span class="kw">public static</span> <span class="cls">UniversityDatabase</span> <span class="fn">getInstance</span>() { <span class="kw">return</span> INSTANCE; }
+}</pre>
+    </div>
+
+    <!-- ResearcherDecorator -->
+    <div class="code-section">
+      <div class="code-header">
+        <span class="file-path">university/patterns/ResearcherDecorator.java</span>
+        <span class="file-role">Decorator pattern</span>
+      </div>
+      <pre><span class="kw">public class</span> <span class="cls">ResearcherDecorator</span> <span class="kw">implements</span> <span class="cls">Researcher</span>, <span class="cls">Serializable</span> {
+  <span class="kw">private final</span> <span class="cls">User</span> wrappedUser;
+  <span class="kw">private final</span> List&lt;<span class="cls">ResearchPaper</span>&gt; researchPapers = <span class="kw">new</span> <span class="cls">ArrayList</span>&lt;&gt;();
+
+  <span class="kw">public</span> <span class="cls">ResearcherDecorator</span>(<span class="cls">User</span> wrappedUser) {
+    <span class="kw">this</span>.wrappedUser = wrappedUser;
+  }
+
+  <span class="kw">public void</span> <span class="fn">addResearchPaper</span>(<span class="cls">ResearchPaper</span> paper) { researchPapers.<span class="fn">add</span>(paper); }
+
+  <span class="kw">public void</span> <span class="fn">PrintPapers</span>(Comparator&lt;<span class="cls">ResearchPaper</span>&gt; comparator) {
+    researchPapers.<span class="fn">stream</span>().<span class="fn">sorted</span>(comparator).<span class="fn">forEach</span>(System.out::println);
+  }
+}</pre>
+    </div>
+
+    <!-- AuthService -->
+    <div class="code-section">
+      <div class="code-header">
+        <span class="file-path">university/utils/AuthService.java</span>
+        <span class="file-role">Authentication + Observable</span>
+      </div>
+      <pre><span class="kw">public class</span> <span class="cls">AuthService</span> <span class="kw">implements</span> <span class="cls">Observable</span> {
+  <span class="kw">private final</span> <span class="cls">UniversityDatabase</span> db;
+  <span class="kw">private final</span> List&lt;<span class="cls">Observer</span>&gt; observers = <span class="kw">new</span> <span class="cls">ArrayList</span>&lt;&gt;();
+
+  <span class="kw">public</span> <span class="cls">User</span> <span class="fn">login</span>(<span class="typ">String</span> email, <span class="typ">String</span> password) <span class="kw">throws</span> <span class="cls">AuthenticationException</span> {
+    <span class="kw">return</span> db.<span class="fn">findUserByEmail</span>(email)
+      .<span class="fn">filter</span>(u -> u.<span class="fn">checkPassword</span>(password))
+      .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="cls">AuthenticationException</span>(<span class="str">"Invalid email or password"</span>));
+  }
+
+  <span class="kw">public void</span> <span class="fn">notifyObservers</span>(<span class="typ">String</span> event) {
+    observers.<span class="fn">forEach</span>(o -> o.<span class="fn">onEvent</span>(event));
+  }
+}</pre>
+    </div>
+
+    <!-- ResearchService -->
+    <div class="code-section">
+      <div class="code-header">
+        <span class="file-path">university/utils/ResearchService.java</span>
+        <span class="file-role">Sorting utilities</span>
+      </div>
+      <pre><span class="kw">public static</span> List&lt;<span class="cls">ResearchPaper</span>&gt; <span class="fn">sortByDate</span>(List&lt;<span class="cls">ResearchPaper</span>&gt; papers) {
+  List&lt;<span class="cls">ResearchPaper</span>&gt; copy = <span class="kw">new</span> <span class="cls">ArrayList</span>&lt;&gt;(papers);
+  copy.<span class="fn">sort</span>(Comparator.<span class="fn">comparing</span>(<span class="cls">ResearchPaper</span>::<span class="fn">getPublishedAt</span>).<span class="fn">reversed</span>());
+  <span class="kw">return</span> copy;
+}
+
+<span class="kw">public static void</span> <span class="fn">joinProject</span>(<span class="cls">User</span> user, <span class="cls">ResearchProject</span> project)
+    <span class="kw">throws</span> <span class="cls">NotResearcherException</span> {
+  <span class="kw">if</span> (!(user <span class="kw">instanceof</span> <span class="cls">Researcher</span>))
+    <span class="kw">throw new</span> <span class="cls">NotResearcherException</span>(<span class="str">"Only researchers can join projects"</span>);
+  project.<span class="fn">addMember</span>(user.<span class="fn">getId</span>());
+}</pre>
+    </div>
+
+  </div>
+
+  <!-- ============ 6. DESIGN PATTERNS ============ -->
+  <div class="section">
+    <div class="section-title">6 · Design patterns implemented</div>
+    <div class="pattern-list">
+      <div class="pattern-item">
+        <span class="tag tag-blue pattern-badge">Singleton</span>
+        <div class="pattern-detail">
+          <div class="pname">UniversityDatabase &amp; SystemLogger</div>
+          <div class="pfiles">UniversityDatabase.java · SystemLogger.java</div>
+          <div class="pdesc">One shared instance of the in-memory database and logger, stored as a static final field and accessed via <code>getInstance()</code>. Both implement <code>Serializable</code> for persistence.</div>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <span class="tag tag-purple pattern-badge">Decorator</span>
+        <div class="pattern-detail">
+          <div class="pname">ResearcherDecorator</div>
+          <div class="pfiles">ResearcherDecorator.java</div>
+          <div class="pdesc">Wraps any <code>User</code> instance to add <code>Researcher</code> behaviour (paper management, h-index, sorted printing) without modifying the wrapped object.</div>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <span class="tag tag-teal pattern-badge">Observer</span>
+        <div class="pattern-detail">
+          <div class="pname">Observable / Observer + NewsItem</div>
+          <div class="pfiles">Observable.java · Observer.java · AuthService.java · SystemLogger.java · NewsItem.java</div>
+          <div class="pdesc"><code>AuthService</code> implements <code>Observable</code> and notifies registered <code>Observer</code> listeners (e.g. <code>SystemLogger</code>) on login/logout events.</div>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <span class="tag tag-green pattern-badge">Strategy</span>
+        <div class="pattern-detail">
+          <div class="pname">ReportGenerator</div>
+          <div class="pfiles">ReportGenerator.java</div>
+          <div class="pdesc">Inner <code>ReportStrategy</code> interface with concrete strategies (<code>TopResearchersReport</code>, <code>AcademicPerformanceReport</code>) injected into <code>ReportGenerator</code> at runtime.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 7. REQUIREMENTS MAP ============ -->
+  <div class="section">
+    <div class="section-title">7 · Requirements coverage</div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+      <table class="req-table">
+        <tr>
+          <td>Authentication</td>
+          <td><code>User.java</code> stores identity; <code>AuthService.java</code> checks credentials; <code>Main.java</code> routes users after login by role.</td>
+        </tr>
+        <tr>
+          <td>Required classes</td>
+          <td><code>User</code>, <code>Employee</code>, <code>Teacher</code>, <code>Manager</code>, <code>Student</code>, <code>Admin</code>, <code>Course</code>, <code>Mark</code>, <code>Lesson</code>, <code>ResearchPaper</code>, <code>ResearchProject</code> — all in <code>university.models</code>. <code>Researcher</code> exists as an interface.</td>
+        </tr>
+        <tr>
+          <td>Enums</td>
+          <td><code>LessonType</code>, <code>DegreeType</code>, <code>Faculty</code>, <code>ManagerType</code>, <code>RequestStatus</code>, <code>TeacherTitle</code>.</td>
+        </tr>
+        <tr>
+          <td>Custom exceptions</td>
+          <td><code>LowHIndexException</code>, <code>NotResearcherException</code>, <code>CreditLimitExceededException</code>, <code>FailLimitExceededException</code>, <code>CourseNotTaughtException</code>, <code>AuthenticationException</code>.</td>
+        </tr>
+        <tr>
+          <td>Research features</td>
+          <td><code>Researcher.java</code>, <code>ResearchPaper.java</code>, <code>ResearchProject.java</code>, <code>ResearchService.java</code>, <code>Teacher.java</code>, <code>Student.java</code>, <code>ResearcherEmployee.java</code>, <code>ResearcherDecorator.java</code>.</td>
+        </tr>
+        <tr>
+          <td>Course registration</td>
+          <td><code>Course.java</code>, <code>RegistrationRequest.java</code>, <code>Student.java</code>, <code>ManagerMenu.java</code>, <code>TeacherMenu.java</code>, <code>Mark.java</code>, <code>ReportGenerator.java</code>.</td>
+        </tr>
+        <tr>
+          <td>Design patterns</td>
+          <td>Singleton (<code>UniversityDatabase</code>, <code>SystemLogger</code>), Decorator (<code>ResearcherDecorator</code>), Observer (<code>Observable</code>/<code>Observer</code> + <code>NewsItem</code>), Strategy (<code>ReportGenerator</code>).</td>
+        </tr>
+        <tr>
+          <td>Serialization</td>
+          <td><code>DataStorage.java</code> serializes and deserializes the database. All model classes implement <code>Serializable</code> through the class hierarchy.</td>
+        </tr>
+        <tr>
+          <td>Console demo</td>
+          <td><code>Main.java</code> and all files in <code>university.demo</code> implement the role-based CLI demo.</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ 8. USE CASE SUMMARY ============ -->
+  <div class="section">
+    <div class="section-title">8 · Actor use cases</div>
+    <div class="uc-grid">
+      <div class="uc-actor">
+        <div class="actor-icon">🔐</div>
+        <div class="actor-name">All users</div>
+        <ul>
+          <li>Login</li>
+          <li>View news</li>
+          <li>Save / load data</li>
+        </ul>
+      </div>
+      <div class="uc-actor">
+        <div class="actor-icon">🛠</div>
+        <div class="actor-name">Admin</div>
+        <ul>
+          <li>Manage users</li>
+          <li>View system logs</li>
+          <li>View complaints</li>
+          <li>Post news</li>
+        </ul>
+      </div>
+      <div class="uc-actor">
+        <div class="actor-icon">📋</div>
+        <div class="actor-name">Manager</div>
+        <ul>
+          <li>Approve/reject requests</li>
+          <li>Manage courses</li>
+          <li>Review registration</li>
+        </ul>
+      </div>
+      <div class="uc-actor">
+        <div class="actor-icon">🎓</div>
+        <div class="actor-name">Teacher</div>
+        <ul>
+          <li>View students</li>
+          <li>Add/view marks</li>
+          <li>Manage lessons</li>
+          <li>Generate reports</li>
+        </ul>
+      </div>
+      <div class="uc-actor">
+        <div class="actor-icon">📚</div>
+        <div class="actor-name">Student</div>
+        <ul>
+          <li>View courses</li>
+          <li>Request registration</li>
+          <li>View own marks</li>
+          <li>Send complaint</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:12px; background:var(--accent-light); border:1px solid #c5d0f0; border-radius:8px; padding:12px 16px;">
+      <span style="font-family:var(--mono); font-size:12px; color:var(--accent); font-weight:500;">ResearcherEmployee</span>
+      <span style="font-size:12.5px; color:var(--text-secondary); margin-left:10px;">Publish research papers · Join research projects · View research papers · Sort by date / citations / pages</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
